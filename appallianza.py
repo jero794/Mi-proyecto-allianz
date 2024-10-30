@@ -77,23 +77,29 @@ with tab1:
         col1.metric(label="Rendimiento Anualizado", value=f"{rendimiento:.2%}")
         col2.metric(label="Riesgo (Desviación Estándar)", value=f"{riesgo:.2%}")
 
-        # Ingreso del monto a invertir (con formato de moneda)
-        monto_inversion_texto = st.text_input("Ingresa el monto que deseas invertir (en USD):", value="0")
+        # Campo de entrada de monto con formateo de moneda conforme se escribe
+        monto_inversion_texto = st.text_input("Ingresa el monto que deseas invertir (en USD):", value="")
 
-        # Remover el símbolo de dólar y las comas, y convertir a número
-        try:
-            monto_inversion = float(monto_inversion_texto.replace(",", "").replace("$", ""))
-        except ValueError:
-            monto_inversion = 0.0  # Valor predeterminado si la conversión falla
+        # Formatear el valor mientras se escribe
+        if monto_inversion_texto:
+        # Remover cualquier coma o signo de dólar antes de la conversión
+            monto_inversion_texto = monto_inversion_texto.replace(",", "").replace("$", "")
+    
+        # Intentar convertir a float y formatear
+            try:
+                monto_inversion = float(monto_inversion_texto)
+                monto_inversion_texto_formateado = f"${monto_inversion:,.2f}"
+            except ValueError:
+                monto_inversion_texto_formateado = monto_inversion_texto  # Mantener sin cambio si no es válido
 
-        # Formatear el monto de entrada con el signo de dólar y comas
-        monto_inversion_formateado = f"${monto_inversion:,.2f}"
-        st.text_input("Monto ingresado:", value=monto_inversion_formateado, disabled=True)
+        # Actualizar el campo de entrada con el formato adecuado
+        st.text_input("Ingresa el monto que deseas invertir (en USD):", value=monto_inversion_texto_formateado, key="monto_inversion_formateado")
 
         # Cálculo del monto final considerando el rendimiento
         if monto_inversion > 0:
             monto_final = monto_inversion * (1 + rendimiento)  # Monto final tras el rendimiento
             st.write(f"### Monto estimado al finalizar el periodo: ${monto_final:,.2f}")
+
 
         # Gráfico de rendimiento
         st.write("### Gráfico de Precio de Cierre")
