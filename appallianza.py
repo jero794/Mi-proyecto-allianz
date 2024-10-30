@@ -96,9 +96,9 @@ with tab1:
             st.text_input("Ingresa el monto que deseas invertir (en USD):", value=monto_inversion_texto_formateado, key="monto_inversion_formateado")
 
         # Cálculo del monto final considerando el rendimiento
-        if monto_inversion > 0:
-            monto_final = monto_inversion * (1 + rendimiento)  # Monto final tras el rendimiento
-            st.write(f"### Monto estimado al finalizar el periodo: ${monto_final:,.2f}")
+            if monto_inversion > 0:
+                monto_final = monto_inversion * (1 + rendimiento)  # Monto final tras el rendimiento
+                st.write(f"### Monto estimado al finalizar el periodo: ${monto_final:,.2f}")
 
 
         # Gráfico de rendimiento
