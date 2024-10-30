@@ -58,6 +58,9 @@ datos_etf = obtener_datos_etf(etf_seleccionado, periodo_seleccionado)
 tab1, tab2, tab3 = st.tabs(["Rendimiento y Riesgo", "Ratios Financieros", "Análisis de Precios"])
 
 # Pestaña 1: Rendimiento y Riesgo
+# Resto de tu código aquí...
+
+# Después de la sección de rendimiento y riesgo en la pestaña 1:
 with tab1:
     st.write(f"### Rendimiento y Riesgo para {etf_seleccionado}")
     if not datos_etf.empty:
@@ -74,6 +77,14 @@ with tab1:
         col1.metric(label="Rendimiento Anualizado", value=f"{rendimiento:.2%}")
         col2.metric(label="Riesgo (Desviación Estándar)", value=f"{riesgo:.2%}")
 
+        # Ingreso del monto a invertir
+        monto_inversion = st.number_input("Ingresa el monto que deseas invertir (en USD):", min_value=0.0, format="%.2f")
+
+        # Cálculo del monto final considerando el rendimiento
+        if monto_inversion > 0:
+            monto_final = monto_inversion * (1 + rendimiento)  # Monto final tras el rendimiento
+            st.write(f"### Monto estimado al finalizar el periodo: ${monto_final:.2f}")
+
         # Gráfico de rendimiento
         st.write("### Gráfico de Precio de Cierre")
         fig, ax = plt.subplots()
@@ -84,6 +95,7 @@ with tab1:
         st.pyplot(fig)
     else:
         st.write("No se encontraron datos para el ETF seleccionado en el periodo especificado.")
+
 
 # Pestaña 2: Ratios Financieros
 with tab2:
