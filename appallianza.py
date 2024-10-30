@@ -83,7 +83,7 @@ with tab1:
         # Cálculo del monto final considerando el rendimiento
         if monto_inversion > 0:
             monto_final = monto_inversion * (1 + rendimiento)  # Monto final tras el rendimiento
-            st.write(f"### Monto estimado al finalizar el periodo: ${monto_final:.2f}")
+            st.write(f"### Monto estimado al finalizar el periodo: ${monto_final:,.2f}")
 
         # Gráfico de rendimiento
         st.write("### Gráfico de Precio de Cierre")
