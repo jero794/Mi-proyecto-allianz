@@ -93,7 +93,7 @@ with tab1:
                 monto_inversion_texto_formateado = monto_inversion_texto  # Mantener sin cambio si no es válido
 
         # Actualizar el campo de entrada con el formato adecuado
-        st.text_input("Ingresa el monto que deseas invertir (en USD):", value=monto_inversion_texto_formateado, key="monto_inversion_formateado")
+            st.text_input("Ingresa el monto que deseas invertir (en USD):", value=monto_inversion_texto_formateado, key="monto_inversion_formateado")
 
         # Cálculo del monto final considerando el rendimiento
         if monto_inversion > 0:
