@@ -160,21 +160,22 @@ with st.expander("Click para comparar el rendimiento y riesgo de dos ETFs", expa
     # Selección de dos ETFs para comparar
     etf_1 = st.selectbox("Selecciona el primer ETF", ("SPY", "QQQ", "DIA", "XLF", "VWO", "XLV", "ITB", "SLV", "EWU", "EWT", "EWY", "EZU", "EWC", "EWJ", "EWG", "EWA", "AGG"), key="etf_1_comparacion")
     etf_2 = st.selectbox("Selecciona el segundo ETF", ("SPY", "QQQ", "DIA", "XLF", "VWO", "XLV", "ITB", "SLV", "EWU", "EWT", "EWY", "EZU", "EWC", "EWJ", "EWG", "EWA", "AGG"), key="etf_2_comparacion")
-    
 
     # Período de análisis para ambos ETFs
     periodo_comparacion = st.selectbox("Selecciona el periodo para la comparación", ("1mo", "3mo", "6mo", "1y", "3y", "5y", "10y"), key="periodo_comparacion")
-    
+
     # Obtener datos y calcular métricas para ambos ETFs
     datos_etf_1 = obtener_datos_etf(etf_1, periodo_comparacion)
     datos_etf_2 = obtener_datos_etf(etf_2, periodo_comparacion)
-    
-    if not datos_etf_1.empty and not datos_etf_2.empty:
-        # Calcular rendimiento y riesgo para el primer ETF
-        rendimiento_1, riesgo_1 = calcular_rendimiento_riesgo(datos_etf_1)
 
-        # Calcular rendimiento y riesgo para el segundo ETF
+    if not datos_etf_1.empty and not datos_etf_2.empty:
+        # Calcular rendimiento, riesgo y Sharpe ratio para el primer ETF
+        rendimiento_1, riesgo_1 = calcular_rendimiento_riesgo(datos_etf_1)
+        sharpe_ratio_1 = calcular_sharpe_ratio(datos_etf_1)
+
+        # Calcular rendimiento, riesgo y Sharpe ratio para el segundo ETF
         rendimiento_2, riesgo_2 = calcular_rendimiento_riesgo(datos_etf_2)
+        sharpe_ratio_2 = calcular_sharpe_ratio(datos_etf_2)
 
         # Mostrar las métricas en dos columnas
         col1, col2 = st.columns(2)
@@ -182,11 +183,13 @@ with st.expander("Click para comparar el rendimiento y riesgo de dos ETFs", expa
             st.write(f"### {etf_1}")
             st.metric("Rendimiento Anualizado", f"{rendimiento_1:.2%}")
             st.metric("Riesgo (Desviación Estándar)", f"{riesgo_1:.2%}")
+            st.metric("Ratio de Sharpe", f"{sharpe_ratio_1:.2f}")
 
         with col2:
             st.write(f"### {etf_2}")
             st.metric("Rendimiento Anualizado", f"{rendimiento_2:.2%}")
             st.metric("Riesgo (Desviación Estándar)", f"{riesgo_2:.2%}")
+            st.metric("Ratio de Sharpe", f"{sharpe_ratio_2:.2f}")
     else:
         st.write("No se encontraron datos para uno o ambos ETFs en el periodo especificado.")
 
