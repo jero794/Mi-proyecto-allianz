@@ -77,8 +77,18 @@ with tab1:
         col1.metric(label="Rendimiento Anualizado", value=f"{rendimiento:.2%}")
         col2.metric(label="Riesgo (Desviación Estándar)", value=f"{riesgo:.2%}")
 
-        # Ingreso del monto a invertir
-        monto_inversion = st.number_input("Ingresa el monto que deseas invertir (en USD):", min_value=0.0, format="%.2f")
+        # Ingreso del monto a invertir (con formato de moneda)
+        monto_inversion_texto = st.text_input("Ingresa el monto que deseas invertir (en USD):", value="0")
+
+        # Remover el símbolo de dólar y las comas, y convertir a número
+        try:
+            monto_inversion = float(monto_inversion_texto.replace(",", "").replace("$", ""))
+        except ValueError:
+            monto_inversion = 0.0  # Valor predeterminado si la conversión falla
+
+        # Formatear el monto de entrada con el signo de dólar y comas
+        monto_inversion_formateado = f"${monto_inversion:,.2f}"
+        st.text_input("Monto ingresado:", value=monto_inversion_formateado, disabled=True)
 
         # Cálculo del monto final considerando el rendimiento
         if monto_inversion > 0:
