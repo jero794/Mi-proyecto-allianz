@@ -6,10 +6,24 @@ import matplotlib.pyplot as plt
 from etfs_data import ETFs_Data
 import numpy as np
 from io import BytesIO
+from PIL import Image
+
+imagen_bienvenida = Image.open("C:\Users\Jerónimo Ramírez\OneDrive - up.edu.mx\UP\7mo Semestre\Ing Fin\Visual Studio")  # Reemplaza con la ruta a tu imagen
+
+# Estado de sesión para gestionar la pantalla de bienvenida
+if "mostrar_bienvenida" not in st.session_state:
+    st.session_state["mostrar_bienvenida"] = True
+
+# Pantalla de bienvenida
+if st.session_state["mostrar_bienvenida"]:
+    st.image(imagen_bienvenida, use_column_width=True)  # Muestra la imagen de bienvenida
+    if st.button("Quiero Invertir"):
+        st.session_state["mostrar_bienvenida"] = False
+else:
 
 # Configuración de la página y estilo
-st.set_page_config(page_title="Simulador Financiero de ETFs - Allianz Patrimonial", layout="centered")
-st.markdown(
+    st.set_page_config(page_title="Simulador Financiero de ETFs - Allianz Patrimonial", layout="centered")
+    st.markdown(
     """
     <style>
     .stApp {background-color: #F8F9FA;}
