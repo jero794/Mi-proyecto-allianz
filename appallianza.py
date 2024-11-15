@@ -8,28 +8,11 @@ from etfs_data import ETFs_Data
 import numpy as np
 from io import BytesIO
 
-# Configuración de la página (esto debe ser lo primero)
-st.set_page_config(page_title="Simulador Financiero de ETFs - Allianz Patrimonial", layout="centered")
 
-# Inicializa la variable de sesión para el botón de inicio
-if 'start_app' not in st.session_state:
-    st.session_state.start_app = False
-
-# Pantalla de inicio
-if not st.session_state.start_app:
-    # Muestra solo la imagen de bienvenida y el botón en la pantalla de inicio
-    st.image("allianz1.jpg", use_column_width=True)
-    if st.button("Quiero Invertir"):
-        # Cambia el estado de la sesión para mostrar el resto de la aplicación
-        st.session_state.start_app = True
-else:
-    # Contenido principal de la app que se muestra solo después de presionar el botón
-    st.write("Aquí va el contenido principal de tu aplicación.")
-    # Agrega aquí el resto del contenido de tu aplicación
 
 # Configuración de la página y estilo
-    st.set_page_config(page_title="Simulador Financiero de ETFs - Allianz Patrimonial", layout="centered")
-    st.markdown(
+st.set_page_config(page_title="Simulador Financiero de ETFs - Allianz Patrimonial", layout="centered")
+st.markdown(
     """
     <style>
     .stApp {background-color: #F8F9FA;}
