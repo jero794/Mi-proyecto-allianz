@@ -20,6 +20,9 @@ if not st.session_state.start_app:
         # Cambia el estado de la sesión para mostrar el resto de la aplicación
         st.session_state.start_app = True
 else:
+    # Contenido principal de la app que se muestra solo después de presionar el botón
+    st.write("Aquí va el contenido principal de tu aplicación.")
+    # Agrega aquí el resto del contenido de tu aplicación
 
 # Configuración de la página y estilo
     st.set_page_config(page_title="Simulador Financiero de ETFs - Allianz Patrimonial", layout="centered")
