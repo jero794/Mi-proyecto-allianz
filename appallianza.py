@@ -12,18 +12,12 @@ from io import BytesIO
 if 'start_app' not in st.session_state:
     st.session_state.start_app = False
 
-# Función para mostrar el contenido principal de la app
-def main_app():
-    st.write("Aquí va el contenido principal de tu aplicación.")
-    # Agrega aquí el resto del contenido de tu aplicación
-
 # Pantalla de inicio
 if not st.session_state.start_app:
-    # Muestra la imagen de bienvenida
+    # Muestra solo la imagen de bienvenida y el botón en la pantalla de inicio
     st.image("allianz1.jpg", use_column_width=True)
-    
-    # Botón para iniciar la app
     if st.button("Quiero Invertir"):
+        # Cambia el estado de la sesión para mostrar el resto de la aplicación
         st.session_state.start_app = True
 else:
 
