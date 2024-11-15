@@ -8,7 +8,8 @@ import numpy as np
 from io import BytesIO
 from PIL import Image
 
-imagen_bienvenida = Image.open("C:\Users\Jerónimo Ramírez\OneDrive - up.edu.mx\UP\7mo Semestre\Ing Fin\Visual Studio")  # Reemplaza con la ruta a tu imagen
+imagen_bienvenida = Image.open("C:\\Users\\Jerónimo Ramírez\\OneDrive - up.edu.mx\\UP\\7mo Semestre\\Ing Fin\\Visual Studio\\imagen.jpg")
+
 
 # Estado de sesión para gestionar la pantalla de bienvenida
 if "mostrar_bienvenida" not in st.session_state:
