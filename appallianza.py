@@ -8,7 +8,7 @@ import numpy as np
 from io import BytesIO
 from PIL import Image
 
-imagen_bienvenida = Image.open("allianz.png")  
+imagen_bienvenida = Image.open("allianz1.jpg")  
 st.image(imagen_bienvenida, caption="Bienvenido a la App de Allianz")
 
 # Estado de sesión para gestionar la pantalla de bienvenida
