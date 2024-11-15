@@ -1,3 +1,4 @@
+
 import streamlit as st
 import yfinance as yf
 import pandas as pd
@@ -6,24 +7,10 @@ import matplotlib.pyplot as plt
 from etfs_data import ETFs_Data
 import numpy as np
 from io import BytesIO
-from PIL import Image
 
-# Cargar imagen de bienvenida
-imagen_bienvenida = Image.open("allianz1.jpg")
-
-# Estado de sesión para gestionar la pantalla de bienvenida
-if "mostrar_bienvenida" not in st.session_state:
-    st.session_state["mostrar_bienvenida"] = True
-
-# Pantalla de bienvenida
-if st.session_state["mostrar_bienvenida"]:
-    st.image(imagen_bienvenida, use_column_width=True)  # Muestra la imagen de bienvenida
-    if st.button("Quiero Invertir"):
-        st.session_state["mostrar_bienvenida"] = False
-else:
-    # Configuración de la página y estilo
-    st.set_page_config(page_title="Simulador Financiero de ETFs - Allianz Patrimonial", layout="centered")
-    st.markdown(
+# Configuración de la página y estilo
+st.set_page_config(page_title="Simulador Financiero de ETFs - Allianz Patrimonial", layout="centered")
+st.markdown(
     """
     <style>
     .stApp {background-color: #F8F9FA;}
@@ -218,7 +205,6 @@ with st.expander("Click para comparar el rendimiento y riesgo de dos ETFs", expa
             st.metric("Ratio de Sharpe", f"{sharpe_ratio_2:.2f}")
     else:
         st.write("No se encontraron datos para uno o ambos ETFs en el periodo especificado.")
-
 
 
 
