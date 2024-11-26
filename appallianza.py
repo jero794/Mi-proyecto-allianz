@@ -225,17 +225,44 @@ def obtener_rendimientos_etfs(periodo):
 
     return etfs_df
 
-st.write("## 10 ETF's con mejor rendimiento conforme el periodo seleccionado")
-periodo_ranking = st.selectbox("Selecciona el periodo para el ranking:", ("1A", "3A", "5A"), key="periodo_ranking")
-ranking_etfs = obtener_rendimientos_etfs(periodo_ranking)
+# Sección: 10 ETFs con mejor rendimiento
+st.write("## 10 ETFs con mejor rendimiento conforme al periodo seleccionado")
 
-if not ranking_etfs.empty:
-    st.write(f"### Ranking de los mejores ETFs para el periodo {periodo_ranking}:")
-    for i, row in ranking_etfs.iterrows():
-        st.write(f"**{i + 1}. {row['Ticker']}** - Rendimiento: {row[f'Rendimiento_{periodo_ranking}']:.2f}% (Riesgo: {row['Riesgo']:.2f}%)")
+# Selector de periodo
+periodo_ranking = st.selectbox(
+    "Selecciona el periodo para el ranking:",
+    options=["1mo", "3mo", "6mo", "1y", "3y", "5y", "10y"]
+)
+
+# Función para calcular rendimientos y riesgos para todos los ETFs
+def calcular_rendimientos_y_riesgos(etfs_data, periodo):
+    rendimiento_riesgo = []
+    for etf in etfs_data:
+        ticker = etf["simbolo"]
+        datos = obtener_datos_etf(ticker, periodo)
+        if not datos.empty:
+            rendimiento = datos['Close'].pct_change().mean() * 252  # Rendimiento anualizado
+            riesgo = datos['Close'].pct_change().std() * (252 ** 0.5)  # Riesgo (desviación estándar anualizada)
+            rendimiento_riesgo.append({
+                "nombre": etf["nombre"],
+                "rendimiento": rendimiento,
+                "riesgo": riesgo
+            })
+    return rendimiento_riesgo
+
+# Obtener y procesar datos para el ranking
+ranking = calcular_rendimientos_y_riesgos(ETFs_Data, periodo_ranking)
+
+# Ordenar por rendimiento en orden descendente y seleccionar los 10 mejores
+ranking_top_10 = sorted(ranking, key=lambda x: x["rendimiento"], reverse=True)[:10]
+
+# Mostrar resultados en una tabla
+if ranking_top_10:
+    st.write("### Ranking de los 10 mejores ETFs")
+    for idx, etf in enumerate(ranking_top_10, start=1):
+        st.write(f"{idx}. **{etf['nombre']}** - Rendimiento: {etf['rendimiento']:.2%} | Riesgo: {etf['riesgo']:.2%}")
 else:
     st.write("No se encontraron datos para los ETFs en el periodo seleccionado.")
-
 
 
 
