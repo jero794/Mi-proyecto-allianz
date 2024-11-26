@@ -253,6 +253,14 @@ st.write("## ¡Vamos a invertir tía MYRIAM!")
 # Selección de ETFs para diversificar el portafolio
 st.write("Selecciona hasta 4 ETFs de la lista anterior para diversificar tu portafolio.")
 
+# Ingreso del monto a invertir
+monto_inversion = st.number_input(
+    "Monto total a invertir ($):",
+    min_value=0.0,
+    step=100.0,
+    format="%.2f"
+)
+
 # Crear opciones de selección basadas en el ranking generado
 etf_opciones = [etf['nombre'] for etf in ranking_top_10]
 etfs_seleccionados = st.multiselect(
@@ -263,24 +271,25 @@ etfs_seleccionados = st.multiselect(
 
 # Verificar si se seleccionaron ETFs
 if etfs_seleccionados:
-    # Asignación de porcentajes
+    # Asignación de porcentajes con barras deslizantes
     st.write("Asigna un porcentaje de tu portafolio a cada ETF seleccionado. La suma no debe superar el 100%.")
     porcentajes = {}
-    suma_porcentajes = 0
+    porcentaje_restante = 100  # Controlar el porcentaje restante
 
-    for etf in etfs_seleccionados:
-        porcentaje = st.number_input(
-            f"Porcentaje para {etf}:",
-            min_value=0.0,
-            max_value=100.0,
-            step=1.0,
-            key=f"porcentaje_{etf}"
+    for idx, etf in enumerate(etfs_seleccionados):
+        porcentaje = st.slider(
+            f"Porcentaje para {etf} (%):",
+            min_value=0,
+            max_value=porcentaje_restante,
+            value=0 if idx > 0 else porcentaje_restante,  # El primer ETF toma el restante completo por defecto
+            step=1,
+            key=f"slider_{etf}"
         )
         porcentajes[etf] = porcentaje / 100
-        suma_porcentajes += porcentaje
+        porcentaje_restante -= porcentaje  # Reducir el porcentaje restante
 
-    # Verificar que la suma de porcentajes no exceda el 100%
-    if suma_porcentajes > 100:
+    # Verificar si se asignaron correctamente los porcentajes
+    if sum(porcentajes.values()) > 1.0:
         st.error("La suma de los porcentajes no debe exceder el 100%. Ajusta los valores por favor.")
     else:
         # Calcular rendimiento y riesgo del portafolio diversificado
@@ -295,10 +304,14 @@ if etfs_seleccionados:
             )
         )
 
+        # Calcular ganancia esperada
+        ganancia_esperada = monto_inversion * rendimiento_portafolio
+
         # Mostrar resultados
         st.write("### Resultados de la diversificación del portafolio")
         st.write(f"**Rendimiento esperado:** {rendimiento_portafolio:.2%}")
         st.write(f"**Riesgo del portafolio:** {riesgo_portafolio:.2%}")
+        st.write(f"**Ganancia esperada:** ${ganancia_esperada:,.2f}")
 
 
 
