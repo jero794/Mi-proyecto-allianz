@@ -271,25 +271,30 @@ etfs_seleccionados = st.multiselect(
 
 # Verificar si se seleccionaron ETFs
 if etfs_seleccionados:
-    # Asignación de porcentajes con barras deslizantes
     st.write("Asigna un porcentaje de tu portafolio a cada ETF seleccionado. La suma no debe superar el 100%.")
+    
+    # Inicializar variables
     porcentajes = {}
-    porcentaje_restante = 100  # Controlar el porcentaje restante
+    total_porcentaje = 0
+    porcentaje_restante = 100  # Inicia con el 100% disponible
 
+    # Recolectar valores con barras deslizantes
     for idx, etf in enumerate(etfs_seleccionados):
+        max_value = porcentaje_restante if idx < len(etfs_seleccionados) - 1 else porcentaje_restante
         porcentaje = st.slider(
             f"Porcentaje para {etf} (%):",
             min_value=0,
-            max_value=porcentaje_restante,
-            value=0 if idx > 0 else porcentaje_restante,  # El primer ETF toma el restante completo por defecto
+            max_value=max_value,
+            value=0,
             step=1,
             key=f"slider_{etf}"
         )
-        porcentajes[etf] = porcentaje / 100
-        porcentaje_restante -= porcentaje  # Reducir el porcentaje restante
+        porcentajes[etf] = porcentaje / 100  # Guardar como proporción
+        porcentaje_restante -= porcentaje
 
-    # Verificar si se asignaron correctamente los porcentajes
-    if sum(porcentajes.values()) > 1.0:
+    # Verificar la asignación de porcentajes
+    suma_porcentajes = sum(porcentajes.values())
+    if suma_porcentajes > 1.0:
         st.error("La suma de los porcentajes no debe exceder el 100%. Ajusta los valores por favor.")
     else:
         # Calcular rendimiento y riesgo del portafolio diversificado
@@ -312,6 +317,7 @@ if etfs_seleccionados:
         st.write(f"**Rendimiento esperado:** {rendimiento_portafolio:.2%}")
         st.write(f"**Riesgo del portafolio:** {riesgo_portafolio:.2%}")
         st.write(f"**Ganancia esperada:** ${ganancia_esperada:,.2f}")
+
 
 
 
