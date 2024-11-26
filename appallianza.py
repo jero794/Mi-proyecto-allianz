@@ -247,92 +247,59 @@ if ranking_top_10:
 else:
     st.write("No se encontraron datos para los ETFs en el periodo seleccionado.")
 
+# Nueva sección: ¡Vamos a invertir tía MYRIAM!
+st.write("## ¡Vamos a invertir tía MYRIAM!")
 
-import yfinance as yf
-import pandas as pd
-import numpy as np
-import streamlit as st
+# Selección de ETFs para diversificar el portafolio
+st.write("Selecciona hasta 4 ETFs de la lista anterior para diversificar tu portafolio.")
 
-# Obtener datos de ETFs en tiempo real
-etf_symbols = ["SPY", "QQQ", "DIA", "XLF", "VWO", "XLV", "ITB", "SLV", 
-               "EWU", "EWT", "EWY", "EZU", "EWC", "EWJ", "EWG", "EWA", "AGG"]
-
-# Función para obtener información de ETFs
-def obtener_datos_etfs(etf_symbols):
-    data = {"ETF": [], "Rendimiento": [], "Riesgo": []}
-    for symbol in etf_symbols:
-        ticker = yf.Ticker(symbol)
-        hist = ticker.history(period="1y")
-        if len(hist) > 0:
-            returns = hist['Close'].pct_change().dropna()
-            data["ETF"].append(symbol)
-            data["Rendimiento"].append(returns.mean() * 252)  # Rendimiento anualizado
-            data["Riesgo"].append(returns.std() * np.sqrt(252))  # Riesgo anualizado
-    return pd.DataFrame(data)
-
-# Cargar datos de los ETFs
-st.write("Cargando datos en tiempo real de los ETFs...")
-df_etfs = obtener_datos_etfs(etf_symbols)
-
-# Ordenar por rendimiento de mayor a menor
-df_etfs = df_etfs.sort_values(by="Rendimiento", ascending=False)
-
-# Agregar ranking del 1 al 10
-df_etfs["Ranking"] = range(1, len(df_etfs) + 1)
-
-# Mostrar los 10 mejores ETFs por rendimiento con ranking
-df_top10 = df_etfs.head(10)[["Ranking", "ETF", "Rendimiento", "Riesgo"]]  # Seleccionar columnas relevantes
-
-st.title("¡TIA MYRIAM VAMOS A INVERTIR!")
-
-# Ingresar cantidad total a invertir
-cantidad_total = st.number_input("¿Cuánto dinero deseas invertir? (en dólares):", min_value=1.0, step=1.0)
-
-# Seleccionar ETFs para diversificación
+# Crear opciones de selección basadas en el ranking generado
+etf_opciones = [etf['nombre'] for etf in ranking_top_10]
 etfs_seleccionados = st.multiselect(
-    "Selecciona hasta 4 ETFs para diversificar tu portafolio (basado en el ranking):",
-    options=df_top10["ETF"].values,
+    "Selecciona los ETFs:",
+    options=etf_opciones,
     max_selections=4
 )
 
-# Mostrar ranking actualizado
-df_top10_display = df_top10.copy()
-df_top10_display["Rendimiento"] = df_top10_display["Rendimiento"].apply(lambda x: f"{x:.2%}")
-df_top10_display["Riesgo"] = df_top10_display["Riesgo"].apply(lambda x: f"{x:.2%}")
-st.subheader("Top 10 ETFs por rendimiento:")
-st.dataframe(df_top10_display)
-
-# Asignar porcentajes
+# Verificar si se seleccionaron ETFs
 if etfs_seleccionados:
-    st.subheader("Asigna un porcentaje de inversión a cada ETF seleccionado.")
+    # Asignación de porcentajes
+    st.write("Asigna un porcentaje de tu portafolio a cada ETF seleccionado. La suma no debe superar el 100%.")
     porcentajes = {}
-    total_percentage = 100
+    suma_porcentajes = 0
 
     for etf in etfs_seleccionados:
-        porcentaje = st.slider(
-            f"Porcentaje para {etf} (restante: {total_percentage}%):",
-            min_value=0,
-            max_value=total_percentage,
-            step=1
+        porcentaje = st.number_input(
+            f"Porcentaje para {etf}:",
+            min_value=0.0,
+            max_value=100.0,
+            step=1.0,
+            key=f"porcentaje_{etf}"
         )
         porcentajes[etf] = porcentaje / 100
-        total_percentage -= porcentaje
+        suma_porcentajes += porcentaje
 
-    if total_percentage > 0:
-        st.warning(f"Aún tienes {total_percentage}% sin asignar. Asigna todo antes de continuar.")
-
-    if total_percentage == 0:
-        # Calcular rendimiento y riesgo del portafolio
-        df_seleccionados = df_etfs[df_etfs["ETF"].isin(etfs_seleccionados)].copy()
-        df_seleccionados["Asignación"] = df_seleccionados["ETF"].map(porcentajes).fillna(0)
-
-        rendimiento_portafolio = (df_seleccionados["Rendimiento"] * df_seleccionados["Asignación"]).sum()
-        riesgo_portafolio = np.sqrt((df_seleccionados["Riesgo"] ** 2 * df_seleccionados["Asignación"]).sum())
+    # Verificar que la suma de porcentajes no exceda el 100%
+    if suma_porcentajes > 100:
+        st.error("La suma de los porcentajes no debe exceder el 100%. Ajusta los valores por favor.")
+    else:
+        # Calcular rendimiento y riesgo del portafolio diversificado
+        rendimiento_portafolio = sum(
+            next(etf['rendimiento'] for etf in ranking_top_10 if etf['nombre'] == nombre) * asignacion
+            for nombre, asignacion in porcentajes.items()
+        )
+        riesgo_portafolio = np.sqrt(
+            sum(
+                (next(etf['riesgo'] for etf in ranking_top_10 if etf['nombre'] == nombre) ** 2) * asignacion
+                for nombre, asignacion in porcentajes.items()
+            )
+        )
 
         # Mostrar resultados
-        st.subheader("Resultados de la diversificación:")
-        st.write(f"Rendimiento del portafolio: {rendimiento_portafolio:.2%}")
-        st.write(f"Riesgo del portafolio: {riesgo_portafolio:.2%}")
+        st.write("### Resultados de la diversificación del portafolio")
+        st.write(f"**Rendimiento esperado:** {rendimiento_portafolio:.2%}")
+        st.write(f"**Riesgo del portafolio:** {riesgo_portafolio:.2%}")
+
 
 
 
