@@ -208,23 +208,6 @@ with st.expander("Click para comparar el rendimiento y riesgo de dos ETFs", expa
     else:
         st.write("No se encontraron datos para uno o ambos ETFs en el periodo especificado.")
 
-def obtener_rendimientos_etfs(periodo):
-    # Simula una base de datos de ETFs con rendimientos ficticios para ilustrar
-    etfs_data = {
-        "Ticker": ["ETF1", "ETF2", "ETF3", "ETF4", "ETF5", "ETF6", "ETF7", "ETF8", "ETF9", "ETF10", "ETF11", "ETF12"],
-        "Rendimiento_1A": np.random.uniform(5, 20, 12),
-        "Rendimiento_3A": np.random.uniform(10, 40, 12),
-        "Rendimiento_5A": np.random.uniform(20, 60, 12),
-        "Riesgo": np.random.uniform(5, 15, 12),
-    }
-    etfs_df = pd.DataFrame(etfs_data)
-
-    # Filtra y ordena por el periodo seleccionado
-    columna_rendimiento = f"Rendimiento_{periodo}"
-    etfs_df = etfs_df.sort_values(by=columna_rendimiento, ascending=False).head(10)
-
-    return etfs_df
-
 # Sección: 10 ETFs con mejor rendimiento
 st.write("## 10 ETFs con mejor rendimiento conforme al periodo seleccionado")
 
