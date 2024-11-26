@@ -225,21 +225,17 @@ def obtener_rendimientos_etfs(periodo):
 
     return etfs_df
 
-# Título de la sección
-st.header("10 ETF's con mejor rendimiento conforme el periodo seleccionado")
+st.write("## 10 ETF's con mejor rendimiento conforme el periodo seleccionado")
+periodo_ranking = st.selectbox("Selecciona el periodo para el ranking:", ("1A", "3A", "5A"), key="periodo_ranking")
+ranking_etfs = obtener_rendimientos_etfs(periodo_ranking)
 
-# Selector de periodo
-periodos = ["1A", "3A", "5A"]
-periodo_seleccionado = st.selectbox("Selecciona el periodo:", periodos, index=0)
+if not ranking_etfs.empty:
+    st.write(f"### Ranking de los mejores ETFs para el periodo {periodo_ranking}:")
+    for i, row in ranking_etfs.iterrows():
+        st.write(f"**{i + 1}. {row['Ticker']}** - Rendimiento: {row[f'Rendimiento_{periodo_ranking}']:.2f}% (Riesgo: {row['Riesgo']:.2f}%)")
+else:
+    st.write("No se encontraron datos para los ETFs en el periodo seleccionado.")
 
-# Obtén los 10 mejores ETFs según el periodo
-mejores_etfs = obtener_rendimientos_etfs(periodo_seleccionado)
-
-# Muestra el listado
-st.subheader(f"Top 10 ETF's - Rendimiento en {periodo_seleccionado}")
-for idx, row in mejores_etfs.iterrows():
-    st.write(f"{idx + 1}. {row['Ticker']} - **{row[f'Rendimiento_{periodo_seleccionado}']:.2f}%** ", end="")
-    st.write(f" (Riesgo: {row['Riesgo']:.2f}%)", unsafe_allow_html=True)
 
 
 
