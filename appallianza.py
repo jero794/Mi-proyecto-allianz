@@ -248,11 +248,7 @@ else:
     st.write("No se encontraron datos para los ETFs en el periodo seleccionado.")
 
 
-etf_data = {
-    "ETF": ["SPY", "QQQ", "DIA", "XLF", "VWO", "XLV", "ITB", "SLV", "EWU", "EWT", "EWY", "EZU", "EWC", "EWJ", "EWG", "EWA", "AGG"],
-    "Rendimiento": [0.12, 0.15, 0.10, 0.09, 0.14, 0.11, 0.13, 0.08, 0.07, 0.06, 0.13, 0.10, 0.08, 0.09, 0.10, 0.07, 0.04],
-    "Riesgo": [0.18, 0.22, 0.15, 0.14, 0.21, 0.16, 0.20, 0.25, 0.19, 0.17, 0.23, 0.18, 0.15, 0.16, 0.17, 0.14, 0.10]
-}
+
 
 # Crear el DataFrame de ETFs
 df_etfs = pd.DataFrame(etf_data)
