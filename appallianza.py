@@ -248,6 +248,7 @@ else:
     st.write("No se encontraron datos para los ETFs en el periodo seleccionado.")
 
 
+
 # Datos iniciales: rendimiento y riesgo de los ETFs
 etf_data = {
     "ETF": ["SPY", "QQQ", "DIA", "XLF", "VWO", "XLV", "ITB", "SLV", "EWU", "EWT", "EWY", "EZU", "EWC", "EWJ", "EWG", "EWA", "AGG"],
@@ -294,6 +295,7 @@ else:
     print("\n\033[1mResultados de la diversificación:\033[0m")
     print(f"Rendimiento del portafolio: {rendimiento_portafolio:.2%}")
     print(f"Riesgo del portafolio: {riesgo_portafolio:.2%}")
+
 
 
 
