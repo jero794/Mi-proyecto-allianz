@@ -271,15 +271,16 @@ def obtener_datos_etfs(etf_symbols):
     return pd.DataFrame(data)
 
 # Cargar datos de los ETFs
-st.write("VAMOS A HACER LANA")
+st.write("VAMOS A HACER MUCHO BILLETE...")
 df_etfs = obtener_datos_etfs(etf_symbols)
 
-# Ordenar por rendimiento y mostrar el top 10
-df_top10 = df_etfs.sort_values(by="Rendimiento", ascending=False).head(10)
+# Ordenar por rendimiento de mayor a menor
+df_etfs = df_etfs.sort_values(by="Rendimiento", ascending=False)
 
 # Mostrar el ranking de los mejores 10 ETFs
 st.title("¡TIA MYRIAM VAMOS A INVERTIR!")
 st.subheader("Top 10 ETFs por rendimiento:")
+df_top10 = df_etfs.head(10)  # Los mejores 10 por rendimiento
 st.dataframe(df_top10.style.format({"Rendimiento": "{:.2%}", "Riesgo": "{:.2%}"}))
 
 # Ingresar cantidad total a invertir
@@ -323,4 +324,5 @@ if etfs_seleccionados:
         st.subheader("Resultados de la diversificación:")
         st.write(f"Rendimiento del portafolio: {rendimiento_portafolio:.2%}")
         st.write(f"Riesgo del portafolio: {riesgo_portafolio:.2%}")
+
 
