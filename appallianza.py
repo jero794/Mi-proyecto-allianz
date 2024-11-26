@@ -247,3 +247,81 @@ if ranking_top_10:
 else:
     st.write("No se encontraron datos para los ETFs en el periodo seleccionado.")
 
+
+
+
+# Datos iniciales: rendimiento y riesgo de los ETFs
+etf_data = {
+    "ETF": ["SPY", "QQQ", "DIA", "XLF", "VWO", "XLV", "ITB", "SLV", "EWU", "EWT", "EWY", "EZU", "EWC", "EWJ", "EWG", "EWA", "AGG"],
+    "Rendimiento": [0.12, 0.15, 0.10, 0.09, 0.14, 0.11, 0.13, 0.08, 0.07, 0.06, 0.13, 0.10, 0.08, 0.09, 0.10, 0.07, 0.04],
+    "Riesgo": [0.18, 0.22, 0.15, 0.14, 0.21, 0.16, 0.20, 0.25, 0.19, 0.17, 0.23, 0.18, 0.15, 0.16, 0.17, 0.14, 0.10]
+}
+
+df_etfs = pd.DataFrame(etf_data)
+
+# Título
+print("\n\033[1m¡TIA MYRIAM VAMOS A INVERTIR!\033[0m\n")
+
+# Mostrar los ETFs disponibles
+print("Los ETFs disponibles son:")
+print(df_etfs.to_string(index=False))
+
+# Ingresar cantidad total a invertir
+while True:
+    try:
+        cantidad_total = float(input("\n¿Cuánto dinero deseas invertir? (en dólares): "))
+        if cantidad_total <= 0:
+            raise ValueError("La cantidad debe ser mayor a 0.")
+        break
+    except ValueError as e:
+        print(e)
+
+# Elegir hasta 4 ETFs para diversificar
+etfs_seleccionados = []
+print("\nSelecciona hasta 4 ETFs para diversificar tu portafolio.")
+print("Escribe el nombre del ETF y presiona Enter. Escribe 'listo' cuando termines.")
+
+while len(etfs_seleccionados) < 4:
+    etf = input(f"ETF {len(etfs_seleccionados) + 1}: ").strip().upper()
+    if etf == "LISTO":
+        if len(etfs_seleccionados) > 0:
+            break
+        else:
+            print("Debes seleccionar al menos un ETF.")
+            continue
+    elif etf not in df_etfs["ETF"].values:
+        print("ETF no válido. Por favor selecciona uno de la lista.")
+    elif etf in etfs_seleccionados:
+        print("Ya seleccionaste este ETF. Elige otro.")
+    else:
+        etfs_seleccionados.append(etf)
+
+# Asignar porcentajes de inversión
+print("\nAsigna un porcentaje de inversión a cada ETF seleccionado.")
+print("La suma debe ser 100%.")
+porcentajes = {}
+suma_porcentajes = 0
+
+for etf in etfs_seleccionados:
+    while True:
+        try:
+            porcentaje = float(input(f"Porcentaje para {etf}: "))
+            if porcentaje < 0 or porcentaje > 100 or suma_porcentajes + porcentaje > 100:
+                raise ValueError("Porcentaje inválido. Asegúrate de que sea entre 0 y 100 y que la suma no exceda 100%.")
+            porcentajes[etf] = porcentaje / 100
+            suma_porcentajes += porcentaje
+            break
+        except ValueError as e:
+            print(e)
+
+# Calcular rendimiento y riesgo del portafolio diversificado
+df_seleccionados = df_etfs[df_etfs["ETF"].isin(etfs_seleccionados)].copy()
+df_seleccionados["Asignación"] = df_seleccionados["ETF"].map(porcentajes).fillna(0)
+
+rendimiento_portafolio = (df_seleccionados["Rendimiento"] * df_seleccionados["Asignación"]).sum()
+riesgo_portafolio = np.sqrt((df_seleccionados["Riesgo"] ** 2 * df_seleccionados["Asignación"]).sum())
+
+# Mostrar resultados
+print("\n\033[1mResultados de la diversificación:\033[0m")
+print(f"Rendimiento del portafolio: {rendimiento_portafolio:.2%}")
+print(f"Riesgo del portafolio: {riesgo_portafolio:.2%}")
