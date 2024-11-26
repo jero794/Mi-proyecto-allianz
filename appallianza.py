@@ -248,6 +248,11 @@ else:
     st.write("No se encontraron datos para los ETFs en el periodo seleccionado.")
 
 
+import yfinance as yf
+import pandas as pd
+import numpy as np
+import streamlit as st
+
 # Obtener datos de ETFs en tiempo real
 etf_symbols = ["SPY", "QQQ", "DIA", "XLF", "VWO", "XLV", "ITB", "SLV", 
                "EWU", "EWT", "EWY", "EZU", "EWC", "EWJ", "EWG", "EWA", "AGG"]
@@ -287,21 +292,31 @@ etfs_seleccionados = st.multiselect(
 # Asignar porcentajes
 if etfs_seleccionados:
     st.subheader("Asigna un porcentaje de inversión a cada ETF seleccionado.")
-    total_percentage = 0
     porcentajes = {}
+    total_percentage = 100
+
     for etf in etfs_seleccionados:
-        porcentaje = st.slider(f"Porcentaje para {etf}", 0, 100, 100 - total_percentage, step=1)
+        porcentaje = st.slider(
+            f"Porcentaje para {etf} (restante: {total_percentage}%)",
+            min_value=0,
+            max_value=total_percentage,
+            step=1
+        )
         porcentajes[etf] = porcentaje / 100
-        total_percentage += porcentaje
+        total_percentage -= porcentaje
 
-    # Calcular rendimiento y riesgo del portafolio
-    df_seleccionados = df_etfs[df_etfs["ETF"].isin(etfs_seleccionados)].copy()
-    df_seleccionados["Asignación"] = df_seleccionados["ETF"].map(porcentajes).fillna(0)
+    if total_percentage > 0:
+        st.warning(f"Aún tienes {total_percentage}% sin asignar. Asigna todo antes de continuar.")
 
-    rendimiento_portafolio = (df_seleccionados["Rendimiento"] * df_seleccionados["Asignación"]).sum()
-    riesgo_portafolio = np.sqrt((df_seleccionados["Riesgo"] ** 2 * df_seleccionados["Asignación"]).sum())
+    if total_percentage == 0:
+        # Calcular rendimiento y riesgo del portafolio
+        df_seleccionados = df_etfs[df_etfs["ETF"].isin(etfs_seleccionados)].copy()
+        df_seleccionados["Asignación"] = df_seleccionados["ETF"].map(porcentajes).fillna(0)
 
-    # Mostrar resultados
-    st.subheader("Resultados de la diversificación:")
-    st.write(f"Rendimiento del portafolio: {rendimiento_portafolio:.2%}")
-    st.write(f"Riesgo del portafolio: {riesgo_portafolio:.2%}")
+        rendimiento_portafolio = (df_seleccionados["Rendimiento"] * df_seleccionados["Asignación"]).sum()
+        riesgo_portafolio = np.sqrt((df_seleccionados["Riesgo"] ** 2 * df_seleccionados["Asignación"]).sum())
+
+        # Mostrar resultados
+        st.subheader("Resultados de la diversificación:")
+        st.write(f"Rendimiento del portafolio: {rendimiento_portafolio:.2%}")
+        st.write(f"Riesgo del portafolio: {riesgo_portafolio:.2%}")
