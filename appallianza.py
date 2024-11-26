@@ -277,11 +277,19 @@ df_etfs = obtener_datos_etfs(etf_symbols)
 # Ordenar por rendimiento de mayor a menor
 df_etfs = df_etfs.sort_values(by="Rendimiento", ascending=False)
 
-# Mostrar los 10 mejores ETFs por rendimiento
+# Agregar ranking del 1 al 10
+df_etfs["Ranking"] = range(1, len(df_etfs) + 1)
+
+# Mostrar los 10 mejores ETFs por rendimiento con ranking
 st.title("¡TIA MYRIAM VAMOS A INVERTIR!")
 st.subheader("Top 10 ETFs por rendimiento:")
-df_top10 = df_etfs.head(10)  # Los mejores 10 por rendimiento
+df_top10 = df_etfs.head(10)[["Ranking", "ETF", "Rendimiento", "Riesgo"]]  # Seleccionar columnas relevantes
 st.dataframe(df_top10.style.format({"Rendimiento": "{:.2%}", "Riesgo": "{:.2%}"}))
+
+# Mostrar lista numerada
+st.write("Lista de los 10 ETFs mejor clasificados:")
+for i, row in df_top10.iterrows():
+    st.write(f"{row['Ranking']}. {row['ETF']} - Rendimiento: {row['Rendimiento']:.2%}, Riesgo: {row['Riesgo']:.2%}")
 
 # Ingresar cantidad total a invertir
 cantidad_total = st.number_input("¿Cuánto dinero deseas invertir? (en dólares):", min_value=1.0, step=1.0)
@@ -324,6 +332,7 @@ if etfs_seleccionados:
         st.subheader("Resultados de la diversificación:")
         st.write(f"Rendimiento del portafolio: {rendimiento_portafolio:.2%}")
         st.write(f"Riesgo del portafolio: {riesgo_portafolio:.2%}")
+
 
 
 
