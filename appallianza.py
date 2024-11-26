@@ -248,5 +248,53 @@ else:
     st.write("No se encontraron datos para los ETFs en el periodo seleccionado.")
 
 
+# Datos iniciales: rendimiento y riesgo de los ETFs
+etf_data = {
+    "ETF": ["SPY", "QQQ", "DIA", "XLF", "VWO", "XLV", "ITB", "SLV", "EWU", "EWT", "EWY", "EZU", "EWC", "EWJ", "EWG", "EWA", "AGG"],
+    "Rendimiento": [0.12, 0.15, 0.10, 0.09, 0.14, 0.11, 0.13, 0.08, 0.07, 0.06, 0.13, 0.10, 0.08, 0.09, 0.10, 0.07, 0.04],
+    "Riesgo": [0.18, 0.22, 0.15, 0.14, 0.21, 0.16, 0.20, 0.25, 0.19, 0.17, 0.23, 0.18, 0.15, 0.16, 0.17, 0.14, 0.10]
+}
+
+df_etfs = pd.DataFrame(etf_data)
+
+# Título
+print("\n\033[1m¡TIA MYRIAM VAMOS A INVERTIR!\033[0m\n")
+
+# Mostrar los ETFs disponibles
+print("Los ETFs disponibles son:")
+print(df_etfs.to_string(index=False))
+
+# Solicitar asignación de porcentajes
+print("\nPor favor, asigne un porcentaje de inversión a cada ETF de manera que la suma sea 100%.")
+inversiones = {}
+suma_porcentajes = 0
+
+for etf in df_etfs["ETF"]:
+    while True:
+        try:
+            porcentaje = float(input(f"Porcentaje para {etf}: "))
+            if porcentaje < 0 or porcentaje > 100 or suma_porcentajes + porcentaje > 100:
+                raise ValueError("Porcentaje inválido. Asegúrese de que sea entre 0 y 100 y no exceda el 100% en total.")
+            inversiones[etf] = porcentaje / 100
+            suma_porcentajes += porcentaje
+            break
+        except ValueError as e:
+            print(e)
+
+# Verificar que la suma sea 100%
+if suma_porcentajes < 100:
+    print("\nLa suma de los porcentajes es menor a 100. Por favor revise la asignación.")
+else:
+    # Calcular rendimiento y riesgo del portafolio diversificado
+    df_etfs["Asignación"] = df_etfs["ETF"].map(inversiones).fillna(0)
+    rendimiento_portafolio = (df_etfs["Rendimiento"] * df_etfs["Asignación"]).sum()
+    riesgo_portafolio = np.sqrt((df_etfs["Riesgo"] ** 2 * df_etfs["Asignación"]).sum())
+
+    # Mostrar resultados
+    print("\n\033[1mResultados de la diversificación:\033[0m")
+    print(f"Rendimiento del portafolio: {rendimiento_portafolio:.2%}")
+    print(f"Riesgo del portafolio: {riesgo_portafolio:.2%}")
+
+
 
 
