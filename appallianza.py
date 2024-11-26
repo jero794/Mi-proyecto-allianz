@@ -8,7 +8,16 @@ from etfs_data import ETFs_Data
 import numpy as np
 from io import BytesIO
 
+# Pantalla de bienvenida
+if "inicio" not in st.session_state:
+    st.session_state.inicio = False
 
+if not st.session_state.inicio:
+    st.image("allianz1.jpg", use_column_width=True)
+    st.title("Bienvenido al Simulador Financiero de ETFs")
+    if st.button("Comenzar"):
+        st.session_state.inicio = True
+    st.stop()
 
 # Configuración de la página y estilo
 st.set_page_config(page_title="Simulador Financiero de ETFs - Allianz Patrimonial", layout="centered")
@@ -98,8 +107,6 @@ with tab1:
             monto_final = monto_inversion * (1 + rendimiento)  # Monto final tras el rendimiento
             st.write(f"### Monto estimado al finalizar el periodo: ${monto_final:,.2f}")
 
-
-
         # Gráfico de rendimiento
         st.write("### Gráfico de Precio de Cierre")
         fig, ax = plt.subplots()
@@ -110,7 +117,6 @@ with tab1:
         st.pyplot(fig)
     else:
         st.write("No se encontraron datos para el ETF seleccionado en el periodo especificado.")
-
 
 # Pestaña 2: Ratios Financieros
 with tab2:
