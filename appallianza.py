@@ -248,53 +248,60 @@ else:
     st.write("No se encontraron datos para los ETFs en el periodo seleccionado.")
 
 
-etf_data = {
-    "ETF": ["SPY", "QQQ", "DIA", "XLF", "VWO", "XLV", "ITB", "SLV", "EWU", "EWT", "EWY", "EZU", "EWC", "EWJ", "EWG", "EWA", "AGG"],
-    "Rendimiento": [0.12, 0.15, 0.10, 0.09, 0.14, 0.11, 0.13, 0.08, 0.07, 0.06, 0.13, 0.10, 0.08, 0.09, 0.10, 0.07, 0.04],
-    "Riesgo": [0.18, 0.22, 0.15, 0.14, 0.21, 0.16, 0.20, 0.25, 0.19, 0.17, 0.23, 0.18, 0.15, 0.16, 0.17, 0.14, 0.10]
-}
+# Obtener datos de ETFs en tiempo real
+etf_symbols = ["SPY", "QQQ", "DIA", "XLF", "VWO", "XLV", "ITB", "SLV", 
+               "EWU", "EWT", "EWY", "EZU", "EWC", "EWJ", "EWG", "EWA", "AGG"]
 
-# Crear el DataFrame de ETFs
-df_etfs = pd.DataFrame(etf_data)
+# Función para obtener información de ETFs
+def obtener_datos_etfs(etf_symbols):
+    data = {"ETF": [], "Rendimiento": [], "Riesgo": []}
+    for symbol in etf_symbols:
+        ticker = yf.Ticker(symbol)
+        hist = ticker.history(period="1y")
+        if len(hist) > 0:
+            returns = hist['Close'].pct_change().dropna()
+            data["ETF"].append(symbol)
+            data["Rendimiento"].append(returns.mean() * 252)  # Rendimiento anualizado
+            data["Riesgo"].append(returns.std() * np.sqrt(252))  # Riesgo anualizado
+    return pd.DataFrame(data)
 
-# Título
+# Cargar datos de los ETFs
+st.write("Cargando datos en tiempo real de los ETFs...")
+df_etfs = obtener_datos_etfs(etf_symbols)
+
+# Mostrar los datos de los ETFs
 st.title("¡TIA MYRIAM VAMOS A INVERTIR!")
-
-# Mostrar los ETFs disponibles
-st.subheader("Los ETFs disponibles:")
+st.subheader("Los ETFs disponibles con datos en tiempo real:")
 st.dataframe(df_etfs)
 
-# Ingresar la cantidad a invertir
+# Ingresar cantidad total a invertir
 cantidad_total = st.number_input("¿Cuánto dinero deseas invertir? (en dólares):", min_value=1.0, step=1.0)
 
-# Seleccionar hasta 4 ETFs
+# Seleccionar ETFs para diversificación
 etfs_seleccionados = st.multiselect(
     "Selecciona hasta 4 ETFs para diversificar tu portafolio:",
     options=df_etfs["ETF"].values,
     max_selections=4
 )
 
-# Asignar los porcentajes para cada ETF
-porcentajes = {}
+# Asignar porcentajes
 if etfs_seleccionados:
     st.subheader("Asigna un porcentaje de inversión a cada ETF seleccionado.")
     total_percentage = 0
+    porcentajes = {}
     for etf in etfs_seleccionados:
         porcentaje = st.slider(f"Porcentaje para {etf}", 0, 100, 100 - total_percentage, step=1)
         porcentajes[etf] = porcentaje / 100
         total_percentage += porcentaje
 
-# Calcular el rendimiento y el riesgo del portafolio
-if len(etfs_seleccionados) > 0:
+    # Calcular rendimiento y riesgo del portafolio
     df_seleccionados = df_etfs[df_etfs["ETF"].isin(etfs_seleccionados)].copy()
     df_seleccionados["Asignación"] = df_seleccionados["ETF"].map(porcentajes).fillna(0)
 
     rendimiento_portafolio = (df_seleccionados["Rendimiento"] * df_seleccionados["Asignación"]).sum()
     riesgo_portafolio = np.sqrt((df_seleccionados["Riesgo"] ** 2 * df_seleccionados["Asignación"]).sum())
 
-    # Mostrar los resultados de la diversificación
+    # Mostrar resultados
     st.subheader("Resultados de la diversificación:")
     st.write(f"Rendimiento del portafolio: {rendimiento_portafolio:.2%}")
     st.write(f"Riesgo del portafolio: {riesgo_portafolio:.2%}")
-else:
-    st.warning("Por favor, selecciona al menos un ETF y asigna un porcentaje.")
