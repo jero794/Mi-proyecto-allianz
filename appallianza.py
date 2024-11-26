@@ -8,16 +8,7 @@ from etfs_data import ETFs_Data
 import numpy as np
 from io import BytesIO
 
-# Pantalla de bienvenida
-if "inicio" not in st.session_state:
-    st.session_state.inicio = False
 
-if not st.session_state.inicio:
-    st.image("allianz1.jpg", use_column_width=True)
-    st.title("Bienvenido al Simulador Financiero de ETFs")
-    if st.button("Comenzar"):
-        st.session_state.inicio = True
-    st.stop()
 
 # Configuración de la página y estilo
 st.set_page_config(page_title="Simulador Financiero de ETFs - Allianz Patrimonial", layout="centered")
@@ -107,6 +98,8 @@ with tab1:
             monto_final = monto_inversion * (1 + rendimiento)  # Monto final tras el rendimiento
             st.write(f"### Monto estimado al finalizar el periodo: ${monto_final:,.2f}")
 
+
+
         # Gráfico de rendimiento
         st.write("### Gráfico de Precio de Cierre")
         fig, ax = plt.subplots()
@@ -117,6 +110,7 @@ with tab1:
         st.pyplot(fig)
     else:
         st.write("No se encontraron datos para el ETF seleccionado en el periodo especificado.")
+
 
 # Pestaña 2: Ratios Financieros
 with tab2:
@@ -214,6 +208,38 @@ with st.expander("Click para comparar el rendimiento y riesgo de dos ETFs", expa
     else:
         st.write("No se encontraron datos para uno o ambos ETFs en el periodo especificado.")
 
+def obtener_rendimientos_etfs(periodo):
+    # Simula una base de datos de ETFs con rendimientos ficticios para ilustrar
+    etfs_data = {
+        "Ticker": ["ETF1", "ETF2", "ETF3", "ETF4", "ETF5", "ETF6", "ETF7", "ETF8", "ETF9", "ETF10", "ETF11", "ETF12"],
+        "Rendimiento_1A": np.random.uniform(5, 20, 12),
+        "Rendimiento_3A": np.random.uniform(10, 40, 12),
+        "Rendimiento_5A": np.random.uniform(20, 60, 12),
+        "Riesgo": np.random.uniform(5, 15, 12),
+    }
+    etfs_df = pd.DataFrame(etfs_data)
+
+    # Filtra y ordena por el periodo seleccionado
+    columna_rendimiento = f"Rendimiento_{periodo}"
+    etfs_df = etfs_df.sort_values(by=columna_rendimiento, ascending=False).head(10)
+
+    return etfs_df
+
+# Título de la sección
+st.header("10 ETF's con mejor rendimiento conforme el periodo seleccionado")
+
+# Selector de periodo
+periodos = ["1A", "3A", "5A"]
+periodo_seleccionado = st.selectbox("Selecciona el periodo:", periodos, index=0)
+
+# Obtén los 10 mejores ETFs según el periodo
+mejores_etfs = obtener_rendimientos_etfs(periodo_seleccionado)
+
+# Muestra el listado
+st.subheader(f"Top 10 ETF's - Rendimiento en {periodo_seleccionado}")
+for idx, row in mejores_etfs.iterrows():
+    st.write(f"{idx + 1}. {row['Ticker']} - **{row[f'Rendimiento_{periodo_seleccionado}']:.2f}%** ", end="")
+    st.write(f" (Riesgo: {row['Riesgo']:.2f}%)", unsafe_allow_html=True)
 
 
 
