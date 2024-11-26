@@ -281,25 +281,26 @@ df_etfs = df_etfs.sort_values(by="Rendimiento", ascending=False)
 df_etfs["Ranking"] = range(1, len(df_etfs) + 1)
 
 # Mostrar los 10 mejores ETFs por rendimiento con ranking
-st.title("¡TIA MYRIAM VAMOS A INVERTIR!")
-st.subheader("Top 10 ETFs por rendimiento:")
 df_top10 = df_etfs.head(10)[["Ranking", "ETF", "Rendimiento", "Riesgo"]]  # Seleccionar columnas relevantes
-st.dataframe(df_top10.style.format({"Rendimiento": "{:.2%}", "Riesgo": "{:.2%}"}))
 
-# Mostrar lista numerada
-st.write("Lista de los 10 ETFs mejor clasificados:")
-for i, row in df_top10.iterrows():
-    st.write(f"{row['Ranking']}. {row['ETF']} - Rendimiento: {row['Rendimiento']:.2%}, Riesgo: {row['Riesgo']:.2%}")
+st.title("¡TIA MYRIAM VAMOS A INVERTIR!")
 
 # Ingresar cantidad total a invertir
 cantidad_total = st.number_input("¿Cuánto dinero deseas invertir? (en dólares):", min_value=1.0, step=1.0)
 
 # Seleccionar ETFs para diversificación
 etfs_seleccionados = st.multiselect(
-    "Selecciona hasta 4 ETFs para diversificar tu portafolio:",
-    options=df_etfs["ETF"].values,
+    "Selecciona hasta 4 ETFs para diversificar tu portafolio (basado en el ranking):",
+    options=df_top10["ETF"].values,
     max_selections=4
 )
+
+# Mostrar ranking actualizado
+df_top10_display = df_top10.copy()
+df_top10_display["Rendimiento"] = df_top10_display["Rendimiento"].apply(lambda x: f"{x:.2%}")
+df_top10_display["Riesgo"] = df_top10_display["Riesgo"].apply(lambda x: f"{x:.2%}")
+st.subheader("Top 10 ETFs por rendimiento:")
+st.dataframe(df_top10_display)
 
 # Asignar porcentajes
 if etfs_seleccionados:
@@ -309,7 +310,7 @@ if etfs_seleccionados:
 
     for etf in etfs_seleccionados:
         porcentaje = st.slider(
-            f"Porcentaje para {etf} (restante: {total_percentage}%)",
+            f"Porcentaje para {etf} (restante: {total_percentage}%):",
             min_value=0,
             max_value=total_percentage,
             step=1
@@ -332,6 +333,7 @@ if etfs_seleccionados:
         st.subheader("Resultados de la diversificación:")
         st.write(f"Rendimiento del portafolio: {rendimiento_portafolio:.2%}")
         st.write(f"Riesgo del portafolio: {riesgo_portafolio:.2%}")
+
 
 
 
